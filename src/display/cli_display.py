@@ -2,25 +2,24 @@ import os
 
 import numpy as np
 
+from src.display.abstract_display import AbstractDisplay
+
 # allows visualising entire np.ndarray
 np.set_printoptions(threshold=np.inf, linewidth=1000)
 
-class Renderer:
+class CliDisplay(AbstractDisplay):
     """Class that implements a renderer to display the output of a CHIP-8
-    emulator.
+    emulator using np.ndarray outputs to the console.
 
     The display for CHIP-8 is 64 x 32 pixels, and each pixel is represented by
     0 or 1.
-
-    TODO: Abstract this out to allow other implementations.
     """
 
     def __init__(self) -> None:
         """Constructor to initialise an np.ndarray-based renderer to output
         a primitive display to the console.
         """
-        self._columns = 64
-        self._rows = 32
+        super().__init__()
 
         # initialise the display as a 32 x 64 np.ndarray of 0s
         self._display = np.zeros((self._rows, self._columns), dtype=np.uint8)

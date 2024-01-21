@@ -1,21 +1,20 @@
 from collections import deque
-import time
 
 import numpy as np
 
-from renderer import Renderer
+from src.display.abstract_display import AbstractDisplay
 
 class Chip8:
     """Class that implements a CHIP-8 emulator.
     """
 
-    def __init__(self, renderer: Renderer) -> None:
+    def __init__(self, display: AbstractDisplay) -> None:
         """Constructor to initialise the CHIP-8 CPU.
 
         Parameters
         ----------
-        renderer : Renderer
-            a renderer object to handle the display of graphics
+        display : AbstractDisplay
+            a display object to handle the display of graphics
         """
         # 4KB (4096 bytes) of memory
         self._memory = np.zeros(4096, dtype=np.uint8)
@@ -39,7 +38,7 @@ class Chip8:
         self._sound_timer = np.uint8(0)
 
         # establish the rendering object
-        self._renderer = renderer
+        self._display = display
 
 
         # load the font data into memory
@@ -131,7 +130,7 @@ class Chip8:
 
         if first_nibble == 0x0000:
             if instruction == 0x00E0:
-                self._renderer.clear()
+                self._display.clear()
             # TODO: more
         elif first_nibble == 0x1000:
             self._program_counter = instruction & 0x0FFF
@@ -182,14 +181,14 @@ class Chip8:
 
             for c in range(0x0008):  # iterate over each bit in sprite
                 if sprite & 0x0080:  # if current bit not zero
-                    pixel_erased = self._renderer.set_pixel(
+                    pixel_erased = self._display.set_pixel(
                         (self._variables[x] + c).astype(np.uint16),
                         (self._variables[y] + r).astype(np.uint16)
                     )
                     self._variables[0x000F] = pixel_erased  # VF = collision
                 sprite <<= 1
 
-        self._renderer.render()
+        self._display.render()
 
     def run(self, program: np.ndarray):
         """Loads in a chip-8 program and runs it.
